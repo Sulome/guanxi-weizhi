@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>关系位置测试｜他最近是不是有点冷</title>
+<style>
+  :root{
+    --bg:#F8F7F5;
+    --accent:#41505F;
+    --ink:#20262B;
+    --muted:#8A9298;
+    --line:#E2DED8;
+    --card:#EFEDE9;
+    --bar-off:#DCD8D2;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    font-size:16px;
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  .wrap{
+    width:100%;
+    max-width:560px;
+    margin:0 auto;
+    padding:0 24px;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  .screen{display:none;flex:1;flex-direction:column;}
+  .screen.on{display:flex;}
+
+  /* ---------- 封面 ---------- */
+  #screen-cover{justify-content:center;padding:64px 0 48px;}
+  .kicker{
+    font-size:12px;letter-spacing:.14em;color:var(--accent);
+    font-weight:600;margin-bottom:26px;
+  }
+  .cover h1{
+    font-size:40px;line-height:1.28;font-weight:800;
+    letter-spacing:-.02em;margin:0 0 22px;
+  }
+  .cover h1 em{font-style:normal;color:var(--accent);}
+  .sub{font-size:16px;color:var(--ink);margin:0 0 6px;font-weight:500;}
+  .sub2{font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 14px;}
+  .meta{font-size:13px;color:var(--muted);margin:0 0 40px;}
+  .btn{
+    display:block;width:100%;border:0;cursor:pointer;
+    background:var(--accent);color:#FCFBFA;
+    font-size:16px;font-weight:600;font-family:inherit;
+    padding:17px 20px;border-radius:10px;
+    letter-spacing:.02em;
+    transition:opacity .15s;
+  }
+  .btn:active{opacity:.82;}
+  .btn-hint{
+    font-size:12.5px;color:var(--muted);text-align:center;
+    margin:14px 0 0;line-height:1.6;
+  }
+
+  /* ---------- 做题 ---------- */
+  #screen-quiz{padding:34px 0 40px;}
+  .qhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+  .qnum{font-size:12.5px;color:var(--muted);letter-spacing:.04em;}
+  .qbar{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:34px;}
+  .qbar > i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .22s ease;}
+  .qtext{
+    font-size:23px;line-height:1.5;font-weight:700;
+    letter-spacing:-.01em;margin:0 0 30px;
+  }
+  .opts{display:flex;flex-direction:column;gap:11px;}
+  .opt{
+    display:block;width:100%;text-align:left;cursor:pointer;
+    background:#FFFFFF;border:1px solid var(--line);
+    color:var(--ink);font-family:inherit;
+    font-size:15.5px;line-height:1.55;
+    padding:15px 17px;border-radius:10px;
+    transition:border-color .14s,background .14s;
+  }
+  .opt:active{background:#F2F0EC;border-color:#C9C3BB;}
+
+  /* ---------- 结果 ---------- */
+  #screen-result{padding:36px 0 44px;}
+  .straight{
+    font-size:12.5px;line-height:1.75;color:var(--muted);
+    border-left:2px solid var(--line);
+    padding-left:12px;margin:0 0 30px;
+  }
+  .posname{
+    font-size:46px;line-height:1.16;font-weight:800;
+    letter-spacing:-.025em;margin:0 0 12px;
+  }
+  .postag{font-size:16px;font-weight:600;color:var(--accent);margin:0 0 30px;}
+  .posrule{height:1px;background:var(--line);margin:0 0 26px;}
+
+  .bars{margin:0 0 30px;}
+  .bar{margin-bottom:13px;}
+  .bar:last-child{margin-bottom:0;}
+  .barhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .barname{font-size:13.5px;color:var(--ink);}
+  .barpct{font-size:14px;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .bar.on .barname{font-weight:700;}
+  .bar.on .barpct{color:var(--accent);font-weight:700;}
+  .bartrack{height:7px;background:#FFFFFF;border-radius:4px;overflow:hidden;}
+  .bartrack > i{display:block;height:100%;width:0;border-radius:4px;background:var(--bar-off);}
+  .bar.on .bartrack > i{background:var(--accent);}
+
+  .strong{font-size:16px;font-weight:600;color:var(--accent);margin:0 0 30px;}
+  .sec{margin:0 0 26px;}
+  .sech{font-size:13px;font-weight:700;letter-spacing:.04em;color:var(--muted);margin:0 0 9px;}
+  .secp{font-size:15.5px;line-height:1.75;margin:0;}
+  .card{
+    background:var(--card);border-radius:10px;
+    padding:20px 18px;margin:0 0 26px;
+  }
+  .card .sech{color:var(--accent);}
+  .week{font-size:15.5px;line-height:1.75;margin:0;padding-left:18px;position:relative;}
+  .week::before{
+    content:"";position:absolute;left:0;top:.62em;
+    width:6px;height:6px;border-radius:50%;background:var(--accent);opacity:.55;
+  }
+  .dual{
+    font-size:12.5px;line-height:1.72;color:var(--muted);
+    margin:0 0 26px;
+  }
+  .acts{margin:34px 0 0;}
+  .btn.ghost{
+    background:transparent;color:var(--ink);
+    border:1px solid var(--line);font-weight:500;
+    margin-top:10px;
+  }
+  .btn.ghost:active{background:#F2F0EC;}
+  .foot{
+    font-size:12px;line-height:1.8;color:var(--muted);
+    margin:34px 0 0;padding-top:20px;border-top:1px solid var(--line);
+  }
+  .foot p{margin:0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 封面 -->
+  <section class="screen on cover" id="screen-cover">
+    <div class="kicker">关系位置 · 不测他，测你</div>
+    <h1>他最近<br><em>是不是有点冷</em></h1>
+    <p class="sub">这个测试不知道他在想什么，那个没人答得了。</p>
+    <p class="sub2">它测的是另一件事：等不到答案的时候，你的力气花在哪。</p>
+    <p class="meta">20 道题 · 约 2 分钟 · 测的是你的力气花在哪</p>
+    <button class="btn" id="btn-start" type="button">开始测试</button>
+    <p class="btn-hint">答完会告诉你，你一直站在这段关系的哪个位置</p>
+  </section>
+
+  <!-- 做题 -->
+  <section class="screen" id="screen-quiz">
+    <div class="qhead">
+      <span class="qnum" id="qnum">第 1 / 20 题</span>
+    </div>
+    <div class="qbar"><i id="qprog"></i></div>
+    <h2 class="qtext" id="qtext"></h2>
+    <div class="opts" id="opts"></div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="screen" id="screen-result">
+    <p class="straight" id="straight">先说清楚：这个测试不知道他在想什么——那个没人答得了。<br>它说的是另一件事：等不到答案的时候，你的力气花在哪了。</p>
+
+    <h2 class="posname" id="posname"></h2>
+    <p class="postag" id="postag"></p>
+    <div class="posrule"></div>
+
+    <div class="bars" id="bars"></div>
+
+    <p class="strong" id="strong"></p>
+
+    <div class="sec" id="sec-grow">
+      <p class="sech">你在这个位置上，通常是这样</p>
+      <p class="secp" id="grow"></p>
+    </div>
+
+    <div class="card" id="card-trap">
+      <p class="sech">这个位置最耗你的地方</p>
+      <p class="secp" id="trap"></p>
+    </div>
+
+    <div class="sec" id="sec-good">
+      <p class="sech">这个位置也有它的好</p>
+      <p class="secp" id="good"></p>
+    </div>
+
+    <div class="sec" id="sec-week">
+      <p class="sech">本周能做的一件</p>
+      <p class="week" id="week"></p>
+    </div>
+
+    <p class="dual" id="dual"></p>
+
+    <div class="acts">
+      <button class="btn" id="btn-copy" type="button">复制我的结果</button>
+      <button class="btn ghost" id="btn-again" type="button">再测一次</button>
+    </div>
+
+    <div class="foot">
+      <p>这不是读心术，也不评价谁对谁错，只看你自己这一侧。</p>
+      <p>如果这段关系已经影响到你吃饭睡觉，请找专业的人聊聊。</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var DIMS = ['PURSUE','WAIT','WATCH','RETREAT'];
+  var DIM_CN = { PURSUE:'进攻方', WAIT:'等待方', WATCH:'观察方', RETREAT:'准备撤退' };
+  var BAR_CN = { PURSUE:'进攻方', WAIT:'等待方', WATCH:'观察方', RETREAT:'准备撤退' };
+  var TOTAL_Q = 20;
+
+  // 题目严格照设计稿 ④，选项顺序一字未动
+  var QUESTIONS = [
+    { text:'他三天没主动找你，你这三天在干嘛？', options:[
+      {t:'反复看有没有新消息，想先发一条', d:'PURSUE'},
+      {t:'正常过日子，等他哪天想起我', d:'WAIT'},
+      {t:'留意他有没有给别人点赞、发动态', d:'WATCH'},
+      {t:'心里把这事往后放了放，正好收一收心思', d:'RETREAT'}
+    ]},
+    { text:'你发了一段话，他回了「好的」', options:[
+      {t:'会把这段对话往上翻，看是哪一步不对', d:'WATCH'},
+      {t:'会想，那我以后少说点', d:'RETREAT'},
+      {t:'会再发一句，把话头接回来', d:'PURSUE'},
+      {t:'会等，看他要不要多说', d:'WAIT'}
+    ]},
+    { text:'他当着你的面夸了另一个女生', options:[
+      {t:'会想，那你去啊', d:'RETREAT'},
+      {t:'会笑着接住，私下再问一句', d:'PURSUE'},
+      {t:'会不说话，心里记着', d:'WAIT'},
+      {t:'会开始留意他跟她有多少来往', d:'WATCH'}
+    ]},
+    { text:'你们冷战到第三天', options:[
+      {t:'会等，实在等不了再说', d:'WAIT'},
+      {t:'会反复想这次到底是谁的问题', d:'WATCH'},
+      {t:'会觉得这样也挺好，少了些麻烦', d:'RETREAT'},
+      {t:'会先发消息，不管是谁的错', d:'PURSUE'}
+    ]},
+    { text:'他发了一条朋友圈，你看不太懂什么意思', options:[
+      {t:'会直接评论或者去问他', d:'PURSUE'},
+      {t:'会点个赞，看他会不会来找我', d:'WAIT'},
+      {t:'会把他最近发的内容连起来看', d:'WATCH'},
+      {t:'会划过去，不想多花心思', d:'RETREAT'}
+    ]},
+    { text:'他半夜十二点突然发来一句「还没睡？」', options:[
+      {t:'会想他这么晚找我是什么意思', d:'WATCH'},
+      {t:'会隔一会儿再回，或者干脆明天', d:'RETREAT'},
+      {t:'会立刻回，聊到停不下来', d:'PURSUE'},
+      {t:'会回，但不会自己先挑话题', d:'WAIT'}
+    ]},
+    { text:'他说「最近有点忙，周末可能见不了」', options:[
+      {t:'会觉得算了，我也有自己的事', d:'RETREAT'},
+      {t:'会说那就下周吧，我等你', d:'PURSUE'},
+      {t:'会说好，然后等他自己约', d:'WAIT'},
+      {t:'会看他到底在忙什么', d:'WATCH'}
+    ]},
+    { text:'他提到前女友，语气挺平静', options:[
+      {t:'会听着，什么都不说', d:'WAIT'},
+      {t:'会把这件事记住，看他后面的反应', d:'WATCH'},
+      {t:'会觉得没必要聊这个', d:'RETREAT'},
+      {t:'会问下去，我想知道', d:'PURSUE'}
+    ]},
+    { text:'你打了三遍的一句话，最后还是删了', options:[
+      {t:'最后还是会发出去', d:'PURSUE'},
+      {t:'删了就删了，等他先开口', d:'WAIT'},
+      {t:'会把删掉的那句留着，想找机会说', d:'WATCH'},
+      {t:'会觉得不发也好，少件事', d:'RETREAT'}
+    ]},
+    { text:'他这一天都没消息，晚上突然问「在吗」', options:[
+      {t:'会想他这一整天在干嘛', d:'WATCH'},
+      {t:'会先不回，过一会儿再说', d:'RETREAT'},
+      {t:'会马上回，问他今天怎么了', d:'PURSUE'},
+      {t:'会回一个「在」，看他接下来说什么', d:'WAIT'}
+    ]},
+    { text:'你们吵架，他说「随你吧」', options:[
+      {t:'会觉得那就算了', d:'RETREAT'},
+      {t:'会追着说清楚，不能就这么算', d:'PURSUE'},
+      {t:'会不说了，等他自己想明白', d:'WAIT'},
+      {t:'会想他这句背后是什么意思', d:'WATCH'}
+    ]},
+    { text:'他把你介绍给他的朋友', options:[
+      {t:'会在旁边待着，等他自己带我进去', d:'WAIT'},
+      {t:'会看他在朋友面前是什么样子', d:'WATCH'},
+      {t:'会有点不自在，想早点走', d:'RETREAT'},
+      {t:'会主动多聊几句，把人都记住', d:'PURSUE'}
+    ]},
+    { text:'他说「我最近状态不太好」，就没细说', options:[
+      {t:'会追问，想知道怎么了', d:'PURSUE'},
+      {t:'会说不急，等他想说', d:'WAIT'},
+      {t:'会观察他这几天的变化', d:'WATCH'},
+      {t:'会有点退，觉得这种事我不擅长', d:'RETREAT'}
+    ]},
+    { text:'他答应你的事，又忘了', options:[
+      {t:'会想这是第一次还是第几次', d:'WATCH'},
+      {t:'会觉得算了，本来也不指望', d:'RETREAT'},
+      {t:'会直接跟他说', d:'PURSUE'},
+      {t:'会说没事，但心里记住', d:'WAIT'}
+    ]},
+    { text:'他回消息突然变得很快，聊得也热', options:[
+      {t:'会有点警惕，怕自己上头', d:'RETREAT'},
+      {t:'会跟着热，多聊几句', d:'PURSUE'},
+      {t:'会高兴，但不会主动加码', d:'WAIT'},
+      {t:'会想这个变化是因为什么', d:'WATCH'}
+    ]},
+    { text:'你妈问你「你们到底什么情况」', options:[
+      {t:'会说不知道，再看看', d:'WAIT'},
+      {t:'会发现自己也说不清，回来又想一遍', d:'WATCH'},
+      {t:'会说还没到那一步', d:'RETREAT'},
+      {t:'会说还在了解，我在往那边走', d:'PURSUE'}
+    ]},
+    { text:'三个月过去了，你说不清你们算什么', options:[
+      {t:'会挑个时候把话问明白', d:'PURSUE'},
+      {t:'会继续这样，等他先说', d:'WAIT'},
+      {t:'会把这三个月的细节过一遍', d:'WATCH'},
+      {t:'会觉得可能本来就不算什么', d:'RETREAT'}
+    ]},
+    { text:'你看着他睡着的样子，突然很慌', options:[
+      {t:'会想这个慌是从哪来的', d:'WATCH'},
+      {t:'会想别太当真，早晚要散', d:'RETREAT'},
+      {t:'会把他叫醒，或者直接说我有点怕', d:'PURSUE'},
+      {t:'会自己待着，把这感觉压下去', d:'WAIT'}
+    ]},
+    { text:'他今天心情不好，对你说话有点冲', options:[
+      {t:'会觉得算了，懒得理', d:'RETREAT'},
+      {t:'会问清楚，是不是我哪里惹到你', d:'PURSUE'},
+      {t:'会不吭声，等他缓过来', d:'WAIT'},
+      {t:'会想他最近是不是压力太大', d:'WATCH'}
+    ]},
+    { text:'朋友问你「他到底喜不喜欢你」', options:[
+      {t:'会说不知道，等吧', d:'WAIT'},
+      {t:'会开始分析他做过的每件事', d:'WATCH'},
+      {t:'会说喜不喜欢都一样，我不指望', d:'RETREAT'},
+      {t:'会说我觉得是，我正在往那边走', d:'PURSUE'}
+    ]}
+  ];
+
+  // 5.4 强度分档（只在有主位置时用）
+  var BANDS = [
+    { min:66, max:100, name:'非常典型', line:'这基本就是你在关系里的默认动作' },
+    { min:46, max:65,  name:'比较典型', line:'在这个位置上，你的反应挺稳的' },
+    { min:31, max:45,  name:'有点倾向', line:'你偏这边，但还没定死，换个人你可能换个位置' }
+  ];
+
+  // 6.2 四个位置的结果文案
+  var CONTENT = {
+    PURSUE: {
+      tag:'你习惯先动，哪怕动错',
+      grow:'他慢一点你就先开口，他不说你问，他退你追。你不是不知道这样显得很主动，你是受不了那种悬着的感觉——主动至少让事情往前走了一步。',
+      trap:'你把「推进」当成了「解决」。关系里很多事不是推一下就动的，你推得越用力，「他还没准备好」就越容易被你读成「他不想要」。你耗掉的不是感情，是反复确认的那口气。',
+      good:'你是四个人里最不容易留遗憾的那个。想说的话说了，想问的问了，就算最后没成，你也不会在半年后想「当时我要是开口就好了」。',
+      week:'下次你想发第二条消息之前，先等 30 分钟。不是憋着不发，是把「等一等」当成一次练习——你会发现大多数时候什么也没塌。'
+    },
+    WAIT: {
+      tag:'你不是没动作，你的动作是等',
+      grow:'你不主动开口，但你一直都在场——秒回、留意他每一条动态、把他随口说的话记住。你在等他自己发现，等他先迈那一步。',
+      trap:'等待最大的问题是它没有反馈。你等了三天，他可能根本不知道你在等。你越等越确定「他不在乎」，可他那边可能只是没意识到球在他手里。你的力气花在了一件他看不见的事上。',
+      good:'你不给人压力，你在关系里很稳。很多人是靠你这种不催不逼，才慢慢走近的。',
+      week:'这周主动开一次话头，小事就行——发一张你看到的好玩的东西，不问他任何问题。你要练的不是表白，是「我可以先动一下，而且不用等结果」。'
+    },
+    WATCH: {
+      tag:'你心里有杆秤，一直在放砝码',
+      grow:'你不推进也不退，你在看。看他回消息的速度、看他跟别人怎么说话、看他有没有变。你心里其实有个天平，一直在往里放东西，只是还没到你说出口的时候。',
+      trap:'看得越多越难下判断。因为关系不是数据，你收集到的每一条都能有两种解释——他回得慢，是忙还是冷？你可以一直收集下去，一直不决定。力气全花在分析上，一点没花在关系上。',
+      good:'你不容易上头，也不太会被骗。很多冲动做的决定，你是躲过去的。',
+      week:'把你现在正在观察的那件事，直接问一句。不用问「你是不是不喜欢我了」这种大的，就问那件具体的——「你最近是不是特别忙？」你要练的是把一个观察变成一个对话。'
+    },
+    RETREAT: {
+      tag:'你心里一直留着一条后路',
+      grow:'你从来没有完全进来过。你会提前想好「如果不行我就走」，会在还好的时候就开始收力气。不是你不爱，是你不信这件事能长久，所以先给自己留个下台阶。',
+      trap:'预留后路会让你没办法真的投入。你永远有一半力气在门口，对方感受得到——他会觉得你随时要走，于是也不敢全给。两个人都留一手，这段关系就永远到不了踏实那一步。你耗掉的是本来可能有的东西。',
+      good:'你不太会被人伤到爬不起来。你有自己的世界，你不是离了谁就活不了的那种人。',
+      week:'找一件小事，这次不准备退路。比如答应一次约会，就不去想「如果他放我鸽子我就怎样」。只做一次，看看什么也没发生的时候，你是什么感觉。'
+    }
+  };
+
+  // 6.3 没有固定位置
+  var NOFIX = {
+    name:'你还在四个位置之间',
+    tag:'你在哪，很看对方是谁',
+    body:'四个位置你的分数都不高——不是你没有模式，是你还没在这段关系里定下来，或者你的反应真的很看人。这不奇怪，很多人在关系还没说清的时候就是这个状态。',
+    more:'想看得更清楚，可以想想你在上一段关系里更像哪一个——那个答案可能比这个测试准。'
+  };
+
+  var STRAIGHT = '先说清楚：这个测试不知道他在想什么——那个没人答得了。它说的是另一件事：等不到答案的时候，你的力气花在哪了。';
+
+  /* ---------------- 计分 ---------------- */
+  function scoreOf(answers){
+    var score = { PURSUE:0, WAIT:0, WATCH:0, RETREAT:0 };
+    for (var i = 0; i < answers.length; i++){
+      var d = QUESTIONS[i].options[answers[i]].d;
+      score[d] += 1;
+    }
+    // 每位置 20 次机会，100/20 = 5，pct 恒为整数，四维之和恒等于 100
+    var pct = {};
+    DIMS.forEach(function(d){ pct[d] = score[d] * 5; });
+    return { score:score, pct:pct };
+  }
+
+  // 5.2 定主位置：先比 pct，相等看前 5 题，仍相等按固定优先级
+  function rankOf(answers){
+    var s = scoreOf(answers);
+    var front5 = { PURSUE:0, WAIT:0, WATCH:0, RETREAT:0 };
+    for (var i = 0; i < 5; i++){
+      front5[QUESTIONS[i].options[answers[i]].d] += 1;
+    }
+    var order = DIMS.slice().sort(function(a,b){
+      if (s.pct[b] !== s.pct[a]) return s.pct[b] - s.pct[a];
+      if (front5[b] !== front5[a]) return front5[b] - front5[a];
+      return DIMS.indexOf(a) - DIMS.indexOf(b);
+    });
+    return { pct:s.pct, score:s.score, order:order, top1:order[0], top2:order[1] };
+  }
+
+  // 5.4 强度分档
+  function bandOf(pct){
+    for (var i = 0; i < BANDS.length; i++){
+      if (pct >= BANDS[i].min && pct <= BANDS[i].max) return BANDS[i];
+    }
+    return null;
+  }
+
+  function judge(answers){
+    var r = rankOf(answers);
+    var top1pct = r.pct[r.top1];
+    var nofix = top1pct <= 30;                       // 5.3 阈值 30，不可改
+    var band = nofix ? null : bandOf(top1pct);
+    var dual = (!nofix && r.pct[r.top2] >= 30 && (top1pct - r.pct[r.top2]) <= 8);  // 5.5
+    return {
+      pct:r.pct, score:r.score, order:r.order,
+      top1:r.top1, top2:r.top2, top1pct:top1pct,
+      nofix:nofix, band:band, dual:dual
+    };
+  }
+
+  /* ---------------- 流程 ---------------- */
+  var answers = [];
+  var cursor = 0;
+
+  var $cover  = document.getElementById('screen-cover');
+  var $quiz   = document.getElementById('screen-quiz');
+  var $result = document.getElementById('screen-result');
+  var $qnum   = document.getElementById('qnum');
+  var $qprog  = document.getElementById('qprog');
+  var $qtext  = document.getElementById('qtext');
+  var $opts   = document.getElementById('opts');
+
+  function show(el){
+    [$cover, $quiz, $result].forEach(function(s){ s.classList.remove('on'); });
+    el.classList.add('on');
+    window.scrollTo(0, 0);
+  }
+
+  function renderQuestion(){
+    var q = QUESTIONS[cursor];
+    $qnum.textContent = '第 ' + (cursor + 1) + ' / ' + TOTAL_Q + ' 题';
+    $qprog.style.width = (cursor / TOTAL_Q * 100) + '%';
+    $qtext.textContent = q.text;
+    $opts.textContent = '';
+    q.options.forEach(function(o, i){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'opt';
+      b.textContent = o.t;
+      b.addEventListener('click', function(){ pick(i); });
+      $opts.appendChild(b);
+    });
+  }
+
+  function pick(i){
+    answers.push(i);
+    cursor += 1;
+    if (cursor >= TOTAL_Q){
+      finish();
+    } else {
+      renderQuestion();
+    }
+  }
+
+  function setAnswers(list){
+    answers = list.slice();
+    cursor = list.length;
+  }
+
+  function finish(){
+    var j = judge(answers);
+    renderResult(j);
+    show($result);
+    return j;
+  }
+
+  function goTo(n){
+    if (n === 0){
+      answers = [];
+      cursor = 0;
+      renderQuestion();
+      show($quiz);
+      return;
+    }
+    if (n === 1){ renderQuestion(); show($quiz); return; }
+    finish();
+  }
+
+  function buildBars(j){
+    var wrap = document.getElementById('bars');
+    wrap.textContent = '';
+    DIMS.forEach(function(d){
+      var on = !j.nofix && d === j.top1;
+      var row = document.createElement('div');
+      row.className = 'bar' + (on ? ' on' : '');
+
+      var head = document.createElement('div');
+      head.className = 'barhead';
+      var name = document.createElement('span');
+      name.className = 'barname';
+      name.textContent = BAR_CN[d];
+      var pct = document.createElement('span');
+      pct.className = 'barpct';
+      pct.textContent = j.pct[d] + '%';
+      head.appendChild(name); head.appendChild(pct);
+
+      var track = document.createElement('div');
+      track.className = 'bartrack';
+      var fill = document.createElement('i');
+      fill.style.width = j.pct[d] + '%';
+      track.appendChild(fill);
+
+      // 准备撤退 在最后一条，名字长，布局不变
+      row.appendChild(head);
+      row.appendChild(track);
+      wrap.appendChild(row);
+    });
+  }
+
+  var copyText = '';
+
+  function renderResult(j){
+    buildBars(j);
+
+    var $posname = document.getElementById('posname');
+    var $postag  = document.getElementById('postag');
+    var $strong  = document.getElementById('strong');
+    var $grow    = document.getElementById('grow');
+    var $trap    = document.getElementById('trap');
+    var $good    = document.getElementById('good');
+    var $week    = document.getElementById('week');
+    var $dual    = document.getElementById('dual');
+    var $secGrow = document.getElementById('sec-grow');
+    var $cardTrap= document.getElementById('card-trap');
+    var $secGood = document.getElementById('sec-good');
+    var $secWeek = document.getElementById('sec-week');
+
+    if (j.nofix){
+      $posname.textContent = NOFIX.name;
+      $postag.textContent  = NOFIX.tag;
+      $strong.textContent  = '';
+      $strong.style.display = 'none';
+      $grow.textContent    = NOFIX.body + NOFIX.more;
+      $secGrow.style.display = '';
+      // 三块整段收掉，文本也清空——换个结果再点回来不留上一轮的字
+      $trap.textContent    = '';
+      $cardTrap.style.display = 'none';
+      $good.textContent    = '';
+      $secGood.style.display = 'none';
+      $week.textContent    = '';
+      $secWeek.style.display = 'none';
+      $dual.textContent = '';
+      $dual.style.display = 'none';
+
+      copyText = '我在关系里的位置：还在四个位置之间。\n'
+        + '四个位置的力气占比：进攻 ' + j.pct.PURSUE + '% / 等待 ' + j.pct.WAIT
+        + '% / 观察 ' + j.pct.WATCH + '% / 撤退 ' + j.pct.RETREAT + '%\n'
+        + '你也测测：' + location.href;
+    } else {
+      var c = CONTENT[j.top1];
+      $posname.textContent = DIM_CN[j.top1];
+      $postag.textContent  = c.tag;
+      $strong.style.display = '';
+      $strong.textContent  = j.band.line;
+      $grow.textContent    = c.grow;
+      $secGrow.style.display = '';
+      $trap.textContent    = c.trap;
+      $cardTrap.style.display = '';
+      $good.textContent    = c.good;
+      $secGood.style.display = '';
+      $week.textContent    = c.week;
+      $secWeek.style.display = '';
+
+      if (j.dual){
+        $dual.style.display = '';
+        $dual.textContent = '你其实会在两个位置之间切换：' + DIM_CN[j.top1] + '（' + j.pct[j.top1] + '）和 '
+          + DIM_CN[j.top2] + '（' + j.pct[j.top2] + '）。看对方是谁，也看那几天你累不累。';
+      } else {
+        $dual.style.display = 'none';
+        $dual.textContent = '';
+      }
+
+      copyText = '我在关系里的位置：' + DIM_CN[j.top1] + '。\n'
+        + '四个位置的力气占比：进攻 ' + j.pct.PURSUE + '% / 等待 ' + j.pct.WAIT
+        + '% / 观察 ' + j.pct.WATCH + '% / 撤退 ' + j.pct.RETREAT + '%\n'
+        + '你也测测：' + location.href;
+    }
+  }
+
+  /* ---------------- 按钮 ---------------- */
+  document.getElementById('btn-start').addEventListener('click', function(){
+    answers = [];
+    cursor = 0;
+    renderQuestion();
+    show($quiz);
+  });
+
+  document.getElementById('btn-again').addEventListener('click', function(){
+    answers = [];
+    cursor = 0;
+    renderQuestion();
+    show($quiz);
+  });
+
+  var $copy = document.getElementById('btn-copy');
+  $copy.addEventListener('click', function(){
+    var done = function(ok){
+      $copy.textContent = ok ? '已复制' : '请长按选中复制';
+      setTimeout(function(){ $copy.textContent = '复制我的结果'; }, 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(copyText).then(function(){ done(true); }, function(){ done(false); });
+    } else {
+      done(false);
+    }
+  });
+
+  /* ---------------- 自测入口 ---------------- */
+  window.__GUANXI__ = {
+    QUESTIONS: QUESTIONS,
+    DIMS: DIMS,
+    DIM_CN: DIM_CN,
+    BAR_CN: BAR_CN,
+    BANDS: BANDS,
+    CONTENT: CONTENT,
+    NOFIX: NOFIX,
+    STRAIGHT: STRAIGHT,
+    TOTAL_Q: TOTAL_Q,
+    scoreOf: scoreOf,
+    rankOf: rankOf,
+    bandOf: bandOf,
+    judge: judge,
+    answersList: function(){ return answers.slice(); },
+    setAnswers: setAnswers,
+    finish: finish,
+    goTo: goTo,
+    optionCount: function(){ return QUESTIONS[cursor].options.length; },
+    clickOption: function(i){
+      var btn = $opts.children[i];
+      if (!btn) throw new Error('没有第 ' + i + ' 个选项');
+      btn.click();
+    },
+    screens: function(){
+      return { cover:$cover.classList.contains('on'), quiz:$quiz.classList.contains('on'), result:$result.classList.contains('on') };
+    },
+    dom: function(){
+      var q = function(id){ return document.getElementById(id); };
+      var rows = Array.prototype.slice.call(document.querySelectorAll('#bars .bar')).map(function(row){
+        return {
+          name: row.querySelector('.barname').textContent,
+          pct: row.querySelector('.barpct').textContent,
+          on: row.classList.contains('on'),
+          width: row.querySelector('.bartrack > i').style.width
+        };
+      });
+      var vis = function(id){ return q(id).style.display !== 'none' && q(id).textContent !== ''; };
+      return {
+        straight: q('straight').textContent,
+        posname: q('posname').textContent,
+        postag: q('postag').textContent,
+        strong: q('strong').style.display === 'none' ? null : q('strong').textContent,
+        bars: rows,
+        grow: vis('grow') ? q('grow').textContent : null,
+        trap: vis('trap') ? q('trap').textContent : null,
+        good: vis('good') ? q('good').textContent : null,
+        week: vis('week') ? q('week').textContent : null,
+        dual: q('dual').style.display === 'none' ? null : q('dual').textContent,
+        foot: Array.prototype.slice.call(document.querySelectorAll('.foot p')).map(function(p){ return p.textContent; }),
+        copyLabel: q('btn-copy').textContent
+      };
+    }
+  };
+
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
